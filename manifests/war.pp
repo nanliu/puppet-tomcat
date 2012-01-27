@@ -54,12 +54,14 @@ define tomcat::war (
     owner    => $owner,
     group    => $group,
     checksum => none,
+    notify   => Class['tomcat::service'],
     require  => Staging::Extract[$filename],
   }
 
   file { "${target}/webapps/${name}":
     ensure => symlink,
     target => "${war_path}/${version}",
+    notify   => Class['tomcat::service'],
     require => File["${war_path}/${version}"],
   }
 
