@@ -9,11 +9,12 @@
 # Requires:
 #
 # Sample Usage:
-#  tomcat::war { 'jenkins':
-#    version => 'hudson-2.2.0',
-#    filename => 'hudson-2.2.0.war'
-#    source  => 'http://hudson-ci.org/downloads/war/2.2.0/hudson.war'
-#  }
+#
+#   tomcat::war { 'hudson':
+#     version => 'hudson-2.2.0',
+#     filename => 'hudson-2.2.0.war'
+#     source  => 'http://hudson-ci.org/downloads/war/2.2.0/hudson.war'
+#   }
 #
 define tomcat::war (
   $version,
@@ -43,7 +44,10 @@ define tomcat::war (
   }
 
   staging::extract { $filename:
-    target  => $war_path,
+    # tar doesn't seem to extract a folder
+    target  => "${war_path}/${version}",
+    user    => $owner,
+    group   => $group,
     creates => "$war_path/$version",
     require => Staging::File[$filename],
   }
@@ -55,14 +59,13 @@ define tomcat::war (
     group    => $group,
     checksum => none,
     notify   => Class['tomcat::service'],
-    require  => Staging::Extract[$filename],
   }
 
   file { "${target}/webapps/${name}":
-    ensure => symlink,
-    target => "${war_path}/${version}",
-    notify   => Class['tomcat::service'],
-    require => File["${war_path}/${version}"],
+    ensure  => symlink,
+    target  => "${war_path}/${version}",
+    require => [ File["${war_path}/${version}"], Staging::Extract[$filename] ],
+    notify  => Class['tomcat::service'],
   }
 
 }
