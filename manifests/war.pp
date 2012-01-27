@@ -48,8 +48,8 @@ define tomcat::war (
     target  => "${war_path}/${version}",
     user    => $owner,
     group   => $group,
-    creates => "$war_path/$version",
-    require => Staging::File[$filename],
+    unless  => "[ \"$(ls -A ${war_path}/${version})\" ]",
+    require => [ File["${war_path}/${version}"], Staging::File[$filename] ],
   }
 
   file { "${war_path}/${version}":
