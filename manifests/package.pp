@@ -47,20 +47,20 @@ class tomcat::package (
 
   case $deployment {
     'file': {
-      $tomcat_dir = "${target}/${version}"
+      $tomcat_path = "${target}/${version}"
 
       staging::file { $filename:
         source => $source,
       }
 
       staging::extract { $filename:
-        target => $target,
-        creates => $tomcat_dir,
+        target  => $target,
+        creates => $tomcat_path,
         require => Staging::File[$filename],
       }
 
 
-      file { $tomcat_dir:
+      file { $tomcat_path:
         ensure   => directory,
         recurse  => true,
         owner    => 'tomcat',
@@ -70,9 +70,9 @@ class tomcat::package (
       }
 
       file { "${target}/tomcat":
-        ensure => symlink,
-        target => $tomcat_dir,
-        require => File[$tomcat_dir],
+        ensure  => symlink,
+        target  => $tomcat_path,
+        require => File[$tomcat_path],
       }
     }
 
