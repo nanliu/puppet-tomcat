@@ -32,6 +32,9 @@ define tomcat::war (
   if ! defined(File[$war_path]) {
     file { $war_path:
       ensure => directory,
+      owner  => $owner,
+      group  => $group,
+      mode   => '0755',
     }
   }
 
