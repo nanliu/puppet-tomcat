@@ -17,13 +17,14 @@ DESC="Apache Tomcat"
 TOMCAT_HOME=<%=tomcat_home%>
 
 LOCKFILE=/var/lock/apache-tomcat
+[ -d /var/run/apache ] || mkdir /var/run/tomcat
+[ $(stat -c %U /var/run/apache) = $USER ] || chown $USER:$USER /var/run/tomcat
 # Exporting catlina pid to /var/run for status
-CATALINA_PID=/var/run/apache-tomcat.pid
+CATALINA_PID=/var/run/tomcat/apache-tomcat.pid
 export CATALINA_PID
 
 start() {
   echo -n $"Starting $prog: "
-  su -p -s /bin/sh $USER $stazrtup
   status -p $CATALINA_PID apache-tomcat > /dev/null && failure || (su -p -s /bin/sh $USER -c "$TOMCAT_HOME/bin/catalina.sh start" > /dev/null && (touch $LOCKFILE ; success))
   RETVAL=$?
   return $RETVAL
