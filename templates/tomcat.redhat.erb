@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# This is the init script for Tomcat server
+#
+# chgconfig: 345 85 15
+# description: Starts and stops the Tomcat daemon.
+#
+
+# source function library
+. /etc/init.d/functions
+
+RETVAL=0
+
+prog=tomcat
+USER=tomcat
+DESC="Apache Tomcat"
+TOMCAT_HOME=<%=tomcat_home%>
+
+LOCKFILE=/var/lock/apache-tomcat
+# Exporting catlina pid to /var/run for status
+CATALINA_PID=/var/run/apache-tomcat.pid
+export CATALINA_PID
+
+start() {
+  echo -n $"Starting $prog: "
+  su -p -s /bin/sh $USER $stazrtup
+  status -p $CATALINA_PID apache-tomcat > /dev/null && failure || (su -p -s /bin/sh $USER -c "$TOMCAT_HOME/bin/catalina.sh start" > /dev/null && (touch $LOCKFILE ; success))
+  RETVAL=$?
+  return $RETVAL
+}
+
+stop() {
+  echo -n $"Stopping $prog: "
+  status -p $CATALINA_PID apache-tomcat > /dev/null && su -p -s /bin/sh $USER -c "$TOMCAT_HOME/bin/catalina.sh stop" > /dev/null && (rm -f $LOCKFILE ; success) || failure
+  RETVAL=$?
+  return $RETVAL
+}
+
+restart() {
+  stop
+  start
+}
+
+# Handle the different input options
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status -p $CATALINA_PID apache-tomcat
+    RETVAL=$?
+    ;;
+  condrestart)
+    [ -e $LOCKFILE ] && $0 restart
+    ;;
+  restart)
+    restart
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|restart|condrestart|status}"
+    exit 1
+esac
+
+exit $RETVAL
