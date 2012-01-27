@@ -1,4 +1,4 @@
 class tomcat::data {
   $oslower = downcase($::osfamily)
-  $tomcat_template = "tomcat.${oslower}.erb"
+  $tomcat_template = "${module_name}/tomcat.${oslower}.erb"
 }
