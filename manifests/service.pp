@@ -12,7 +12,7 @@
 #
 class tomcat::service (
   $service_name = hiera('tomcat_service_name', 'tomcat'),
-  $template     = hiera('tomcat_template', "tomcat/tomcat.${::osfamily}.erb"),
+  $template     = hiera('tomcat_template'),
   $target       = hiera('tomcat_target', '/opt')
 ){
 
