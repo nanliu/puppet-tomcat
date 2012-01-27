@@ -24,8 +24,9 @@ class tomcat::package (
   $shell        = hiera('tomcat_shell', '/bin/nologin'),
   $deployment   = hiera('tomcat_deployment', 'file'),
   $package_name = hiera('tomcat_package_name', 'tomcat'),
-  $version      = hiera('tomcat_version', 'apache-tomcat-6.0.35'),
+  $version      = hiera('tomcat_version', 'apache-tomact-6.0.35'),
   # settings below only relevant for file deployment
+  $filename     = hiera('tomcat_filename', 'apache-tomcat-6.0.35.tar.gz'),
   $source       = hiera('tomcat_source', 'http://apache.mirrorcatalogs.com/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.tar.gz'),
   $target       = hiera('tomcat_target', '/opt')
 ) {
@@ -46,16 +47,18 @@ class tomcat::package (
 
   case $deployment {
     'file': {
-      staging::file { $version:
+      $tomcat_dir = "${target}/${version}"
+
+      staging::file { $filename:
         source => $source,
       }
 
-      staging::extract { $version:
+      staging::extract { $filename:
         target => $target,
-        require => Staging::File[$version],
+        creates => $tomcat_dir,
+        require => Staging::File[$filename],
       }
 
-      $tomcat_dir = "${target}/${version}"
 
       file { $tomcat_dir:
         ensure   => directory,
