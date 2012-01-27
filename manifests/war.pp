@@ -57,7 +57,7 @@ define tomcat::war (
     require  => Staging::Extract[$filename],
   }
 
-  file { "${tomcat_home}/webapps/${name}":
+  file { "${target}/webapps/${name}":
     ensure => symlink,
     target => "${war_path}/${version}",
     require => File["${war_path}/${version}"],
