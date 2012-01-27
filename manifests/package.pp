@@ -66,7 +66,7 @@ class tomcat::package (
         owner    => 'tomcat',
         group    => 'tomcat',
         checksum => 'none',
-        require  => Staging::Extract[$version],
+        require  => Staging::Extract[$filename],
       }
 
       file { "${target}/tomcat":
