@@ -60,7 +60,7 @@ define tomcat::war (
   file { "${tomcat_home}/webapps/${name}":
     ensure => symlink,
     target => "${war_path}/${version}",
-    require => File[${war_path}/${version}],
+    require => File["${war_path}/${version}"],
   }
 
 }
